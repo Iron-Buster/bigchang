@@ -62,7 +62,7 @@ public class LC_2512 {
             return this.score == o.score ? this.id - o.id : o.score - this.score;
         }
     }
-    
+
 
     public static void main(String[] args) {
 
