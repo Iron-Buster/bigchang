@@ -27,8 +27,25 @@ public class B {
         in.nextToken();
         return in.sval;
     }
-
-    public static void main(String[] args) {
-
+    static int N;
+    static int Q;
+    public static void main(String[] args) throws IOException {
+        var r = new int[110];
+        var y = new int[110];
+        N = nextInt();
+        Q = nextInt();
+        while (Q-- > 0) {
+            int event = nextInt();
+            int x = nextInt();
+            if (event == 1) {
+                y[x]++;
+            } else if (event == 2) {
+                r[x]++;
+            } else if (event == 3) {
+                if (y[x] > 1 || r[x] > 0) { out.print("Yes\n"); }
+                else                      { out.print("No\n");}
+            }
+        }
+        out.close();
     }
 }
