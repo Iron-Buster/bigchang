@@ -7,27 +7,40 @@ import java.util.List;
 public class T3 {
 
     public int findValidSplit(int[] nums) {
-        // 互质: 左半部分 和 右半部分 没有公共质因子
-        var left = new HashMap<Integer, Integer>();
-        var right = new HashMap<Integer, Integer>();
-        for (int num : nums) {
-            for (int factor : divide(num)) {
-                right.put(factor, right.getOrDefault(factor, 0) + 1);
+        // 互质: 左半部分 和 右半部分 没有公共质因
+        // 对于一个质数,将它的第一个出现的位置(left)和最后一次出现的位置(right)找出来
+        // 答案不可能在中间 [left, right) => 答案可能是right
+        // 答案是一个组区间的右端点的最大值
+        // right[i] 记录 i 是左端点的情况右端点的最大值
+        int n = nums.length;
+        var left = new HashMap<Integer, Integer>(); // left[p] = p首次出现的下标
+        var right = new int[n];
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            for (int d = 2; d * d <= num; d++) {      // 质因数分解
+                if (num % d == 0) {
+                    left.putIfAbsent(d, i);         // 第一次遇到质数d
+                    right[left.get(d)] = i;         // 记录左端点对应右端点的最大值
+                    num /= d;
+                    while (num % d == 0) num /= d;
+                }
+            }
+            if (num > 1) {                            // x是一个大质数
+                left.putIfAbsent(num, i);
+                right[left.get(num)] = i;
             }
         }
-        // 从左到右枚举最小分割点
-        for (int i = 0; i < nums.length - 1; i++) {
-            for (int factor : divide(nums[i])) {
-                right.put(factor, right.getOrDefault(factor, 0) - 1);
-                left.put(factor, left.getOrDefault(factor, 0) + 1);
-                // 右边不存在factor这个因子, 那么左边保存factor也没有意义
-                if (right.get(factor) <= 0) left.remove(factor);
-                // find nice position
-                if (left.isEmpty()) return i;
+        for (int l = 0, maxR = 0; l < n; l++) {
+            if (l > maxR) { // 最远可以到达的maxR
+                return maxR;
             }
+            maxR = Math.max(maxR, right[l]);
         }
         return -1;
     }
+
+
+
 
     // 质因数分解
     List<Integer> divide(int x) {
